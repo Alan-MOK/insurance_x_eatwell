@@ -4,7 +4,7 @@ import numpy as np
 import plotly.express as px
 from scipy.optimize import fsolve
 import math
-
+import matplotlib.pyplot as plt
 
 def add_commas(number):
     # Convert the number to a string
@@ -258,24 +258,17 @@ with main_display:
             annual_salary = math.ceil(final_premium/0.1 / 10**(num_digits_before_decimal-1)) * 10**(num_digits_before_decimal-1)
 
     
-        display_1 = pd.DataFrame(
-            {
-                'title': ['Bench', 'Annual Premium'],
-                'x-axis': [1, 1],
-                'y-axis': [1, 1],
-                'Annual Payment': [annual_salary, final_premium]
-            }
-            )
-        fig = px.scatter(
-                display_1,
-                x="x-axis",
-                y="y-axis",
-                size="Annual Payment",
-                color='title',
-                log_x=True,
-                size_max=200,
-            )
-        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
+        # Sample data for the pie chart
+        labels = ['Annual Salary', 'Annual Premium']
+        sizes = [(annual_salary-final_premium),final_premium]  # Sample values for the categories
+
+        # Create a pie chart with a hole using Matplotlib
+        fig, ax = plt.subplots()
+        ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, wedgeprops={'width': 0.5})
+        ax.axis('equal')  # Equal aspect ratio ensures that pie chart is drawn as a circle.
+    
+        # Display the pie chart with a hole using Streamlit
+        st.pyplot(fig)
 
 
     with col2:
@@ -283,7 +276,7 @@ with main_display:
         prem_D_salary_plt = math.ceil(prem_D_salary*1000)/10
         st.subheader(f"{prem_D_salary_plt}% of Annual Salary")
     
-    Total_prem = payment_opt*final_premium
+    Total_prem = math.ceil(risk_prem*RoPfactor*payment_opt)
     Total_prem_c = add_commas(Total_prem)
     st.subheader(f"Total Premium: $ {Total_prem_c}")
 
@@ -296,21 +289,21 @@ with main_display:
     st.subheader(f"After Eatwell Health Factor : $ {After_Eatwell_Health_Factor_c}")
 
 
-    # Bar chart plot
-    bar_chart_data = {
-        ' ': ['Total Premium', 'RoP Plus investwell bonus', 'After Eatwell Health Factor'],
-        'Values': [Total_prem, RoP_Plus_investwell_bonus, After_Eatwell_Health_Factor]
-    }
+    # # Bar chart plot
+    categories = ['Total Premium', 'RoP Plus investwell bonus', 'After Eatwell Health Factor']
+    values = [Total_prem, RoP_Plus_investwell_bonus, After_Eatwell_Health_Factor]
 
-    # Create a DataFrame from the data
-    df = pd.DataFrame(bar_chart_data)
+    # Create a bar chart using Matplotlib
+    plt.figure(figsize=(8, 6))
+    plt.bar(categories, values, color='steelblue')
+    plt.xlabel(' ')
+    plt.ylabel('Values')
+    plt.title('Maturity Value')
+    plt.xticks(rotation=0)  # Rotate x-axis labels for better visibility
+    plt.tight_layout()
 
-    # Create a bar chart using Plotly Express
-    fig = px.bar(df, x=' ', y='Values', title='Maturity Value')
-
-    # Display the chart in Streamlit app
-    st.plotly_chart(fig)
-
+    # Display the bar chart using Streamlit
+    st.pyplot(plt)
 
 
 with tab_concept:
