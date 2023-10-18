@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-# import plotly.express as px
-# import math
 import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
 
@@ -256,7 +254,7 @@ with main_display:
             decimal_index = number_str.index('.')
             digits_before_decimal = number_str[:decimal_index]
             num_digits_before_decimal = len(digits_before_decimal)
-            annual_salary = math.ceil(final_premium/0.1 / 10**(num_digits_before_decimal-1)) * 10**(num_digits_before_decimal-1)
+            annual_salary = int(final_premium/0.1 / 10**(num_digits_before_decimal-1)) * 10**(num_digits_before_decimal-1)
 
     
         # Sample data for the pie chart
@@ -274,18 +272,18 @@ with main_display:
 
     with col2:
         prem_D_salary = final_premium/annual_salary
-        prem_D_salary_plt = math.ceil(prem_D_salary*1000)/10
+        prem_D_salary_plt = int(prem_D_salary*1000)/10
         st.subheader(f"{prem_D_salary_plt}% of Annual Salary")
     
-    Total_prem = math.ceil(risk_prem*RoPfactor*payment_opt)
+    Total_prem = int(risk_prem*RoPfactor*payment_opt)
     Total_prem_c = add_commas(Total_prem)
     st.subheader(f"Total Premium: $ {Total_prem_c}")
 
-    RoP_Plus_investwell_bonus = math.ceil(ROP['Expected Future Value High-Alpha'].sum()+(risk_prem*payment_opt*RoPfactor))
+    RoP_Plus_investwell_bonus = int(ROP['Expected Future Value High-Alpha'].sum()+(risk_prem*payment_opt*RoPfactor))
     RoP_Plus_investwell_bonus_c = add_commas(RoP_Plus_investwell_bonus)
     st.subheader(f"RoP Plus investwell bonus : $ {RoP_Plus_investwell_bonus_c}")
                                                          
-    After_Eatwell_Health_Factor = math.ceil(RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term))
+    After_Eatwell_Health_Factor = int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term))
     After_Eatwell_Health_Factor_c = add_commas(After_Eatwell_Health_Factor)
     st.subheader(f"After Eatwell Health Factor : $ {After_Eatwell_Health_Factor_c}")
 
