@@ -6,7 +6,6 @@ from scipy.optimize import fsolve
 
 
 
-
 def add_commas(number):
     # Convert the number to a string
     num_str = str(number)
@@ -384,3 +383,6 @@ with other_metric:
     st.write(f"likely maturity value: {RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term)}")
 
 
+
+
+ 
