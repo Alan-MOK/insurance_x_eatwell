@@ -191,8 +191,6 @@ def goalseek_cell(goal_seek):
 goal_seek = fsolve(goalseek_cell, 0)[0]  # Start the search from initial guess x=0
 
 
-final_premium = int(risk_prem*goal_seek*100)/100
-
 
 # Define the equation
 def goalseek_cell_2(RoPfactor):
@@ -239,7 +237,7 @@ ROP = pd.DataFrame(
 }
 )
 
-
+final_premium = int(risk_prem*RoPfactor*100)/100
 
 # main diplay page
 main_display, tab_concept, RoP_Table, other_metric= st.tabs(["Main Display", "Concept", 'RoP Table', 'Others'])
