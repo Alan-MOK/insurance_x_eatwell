@@ -294,10 +294,16 @@ with main_display:
 
     # Create a bar chart using Matplotlib
     plt.figure(figsize=(8, 6))
-    plt.bar(categories, values, color='steelblue')
+    bars = plt.bar(categories, values, color='steelblue')
     plt.xlabel(' ')
     plt.ylabel('Values')
     plt.title('Maturity Value')
+
+    # Display the labels on top of each bar
+    for bar, label in zip(bars, values):
+        plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.3, label,
+                ha='center', va='bottom')
+    
     plt.xticks(rotation=0)  # Rotate x-axis labels for better visibility
     plt.tight_layout()
 
