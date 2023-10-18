@@ -2,9 +2,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 # import plotly.express as px
-from scipy.optimize import fsolve
 import math
 import matplotlib.pyplot as plt
+from scipy.optimize import fsolve
+
 
 def add_commas(number):
     # Convert the number to a string
