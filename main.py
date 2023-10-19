@@ -97,12 +97,23 @@ with st.sidebar:
     maturity_term = st.select_slider(
         "Maturity Term (year)",
         options = np.arange(min_value, 51),
+        value = 20
     )
     # st.write('The current number is ', maturity_term)
     st.title(" ")
 
-    st.title("Personal info")
+    # decrement_reduction
+    decrement_reduction = st.select_slider(
+        "Decrement Reduction (0%, 100%])",
+        options = np.arange(0, 101, 5),
+        value = 60
+    )
+    # st.write('The current number is ', maturity_term)
+    decrement_reduction = decrement_reduction/100
+    st.title(" ")
 
+
+    st.title("Personal info")
     annual_salary = st.number_input(
         "Your Annual Salary    (step: 1000)", 
         min_value = 100000,
@@ -126,7 +137,7 @@ RoPfactor = 4
 fixed_income_portion = 0.75
 high_alpha_portion = 0.25
 profit_share = 0.5
-decrement_reduction = 0.6
+
 
 
 # Create the first column from 1 to 20
