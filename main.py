@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from scipy.optimize import fsolve
 
@@ -107,7 +107,7 @@ with st.sidebar:
     annual_salary = st.number_input(
         "Your Annual Salary    (step: 1000)", 
         min_value = 100000,
-        value = 100000, 
+        value = 179900, 
         step = 1000
         )
     st.write('The current number is  $', add_commas(annual_salary))
