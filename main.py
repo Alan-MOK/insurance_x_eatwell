@@ -102,14 +102,14 @@ with st.sidebar:
     # st.write('The current number is ', maturity_term)
     st.title(" ")
 
-    # decrement_reduction
-    decrement_reduction = st.select_slider(
-        "Decrement Reduction (0%, 100%])",
+    # health improvement
+    health_improvement = st.select_slider(
+        "Health Improvement (0%, 100%])",
         options = np.arange(0, 101, 5),
-        value = 60
+        value = 30
     )
-    # st.write('The current number is ', maturity_term)
-    decrement_reduction = decrement_reduction/100
+    # st.write('The current number is ', health_improvement)
+    health_improvement = health_improvement/100
     st.title(" ")
 
 
@@ -296,7 +296,7 @@ with main_display:
         RoP_Plus_investwell_bonus_c = add_commas(RoP_Plus_investwell_bonus)
         st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>RoP Plus investwell bonus : $ {RoP_Plus_investwell_bonus_c}</p>", unsafe_allow_html=True)
                                                             
-        After_Eatwell_Health_Factor = int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term))
+        After_Eatwell_Health_Factor = int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*health_improvement*((1+fixed_income_asset_coupon)**maturity_term))
         After_Eatwell_Health_Factor_c = add_commas(After_Eatwell_Health_Factor)
         st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>After Eatwell Health Factor : $ {After_Eatwell_Health_Factor_c}</p>", unsafe_allow_html=True)
 
@@ -387,8 +387,8 @@ with other_metric:
     st.write(f'as percent of RoP: {int(high_alpha_FV/(risk_prem*RoPfactor*payment_opt)*100)}%')
     st.write(f"total maturity value: {add_commas(int(high_alpha_FV+(risk_prem*RoPfactor*payment_opt)))}")
     st.write(f"calculated premium: {add_commas(int(risk_prem*RoPfactor))}")
-    st.write(f"a health factor bonus: {add_commas(int(profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term)))}")
-    st.write(f"likely maturity value: {add_commas(int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term)))}")
+    st.write(f"a health factor bonus: {add_commas(int(profit_share*insurance_risk*health_improvement*((1+fixed_income_asset_coupon)**maturity_term)))}")
+    st.write(f"likely maturity value: {add_commas(int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*health_improvement*((1+fixed_income_asset_coupon)**maturity_term)))}")
 
 
 
