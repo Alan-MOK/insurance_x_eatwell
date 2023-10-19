@@ -1,9 +1,19 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 from scipy.optimize import fsolve
 
+def page_config():
+    img = 'https://reimage.cfo-ai.com/assets/images/icon/powered_logo.svg'
+    st.set_page_config(
+        "INSURANCE x EATWELL",
+        # img,
+        initial_sidebar_state="expanded",
+        layout="wide",
+    )
+page_config()
 
 
 def add_commas(number):
@@ -84,27 +94,12 @@ with st.sidebar:
     st.title(" ")
 
     # Maturity Term
+    min_value = max(10, payment_opt)
     maturity_term = st.select_slider(
         "Maturity Term (year)",
-        options = [20, 25, 33, 40 ,50 ,60],
+        options = np.arange(min_value, 51),
     )
     # st.write('The current number is ', maturity_term)
-    st.title(" ")
-
-    # terminal bonus amount as a % of RoP
-    terminal_bonus_s = st.select_slider(
-        "Terminal Bonus Amount as a % of RoP",
-        options = ['20%', '30%', '40%', '50%'],
-    )
-    if terminal_bonus_s == '20%':
-        terminal_bonus = 0.2
-    elif terminal_bonus_s == '30%':
-        terminal_bonus = 0.3
-    elif terminal_bonus_s == '40%':
-        terminal_bonus = 0.4
-    else:
-        terminal_bonus = 0.5
-    # st.write('The current number is ', terminal_bonus)
     st.title(" ")
 
     st.title("Personal info")
@@ -120,7 +115,7 @@ with st.sidebar:
 
 
 '''
-    # create the data table:
+    # INSURANCE DEMO:
 '''
 
 # initiate some value
@@ -180,6 +175,7 @@ column_12 = [x * y for x, y in zip(column_4, column_10)]
 column_13 = [x + y for x, y in zip(column_11, column_12)]
 
 goal_seek = 1.4
+terminal_bonus =0.2
 # Define the equation
 def goalseek_cell(goal_seek):
 
@@ -190,8 +186,6 @@ def goalseek_cell(goal_seek):
 # Use fsolve to find the root of the equation (where equation(x) equals the target value)
 goal_seek = fsolve(goalseek_cell, 0)[0]  # Start the search from initial guess x=0
 
-
-final_premium = int(risk_prem*goal_seek*100)/100
 
 
 # Define the equation
@@ -239,16 +233,16 @@ ROP = pd.DataFrame(
 }
 )
 
-
+final_premium = int(risk_prem*RoPfactor*100)/100
 
 # main diplay page
 main_display, tab_concept, RoP_Table, other_metric= st.tabs(["Main Display", "Concept", 'RoP Table', 'Others'])
 
 with main_display:
-    col1, col2= st.columns([8,2])
+    col1, col2= st.columns([5,5])
     with col1:
-        st.header("Calculated Annual Premium")
-        st.header(f"Annual Premium $:{add_commas(final_premium)}")
+        st.subheader("Calculated Annual Premium")
+        st.subheader(f"Annual Premium ${add_commas(final_premium)}")
 
         if annual_salary == None:
             number_str = str(final_premium)
@@ -257,60 +251,57 @@ with main_display:
             num_digits_before_decimal = len(digits_before_decimal)
             annual_salary = int(final_premium/0.1 / 10**(num_digits_before_decimal-1)) * 10**(num_digits_before_decimal-1)
 
-    
-        display_1 = pd.DataFrame(
-            {
-                'title': ['Bench', 'Annual Premium'],
-                'x-axis': [1, 1],
-                'y-axis': [1, 1],
-                'Annual Payment': [annual_salary, final_premium]
-            }
-            )
-        fig = px.scatter(
-                display_1,
-                x="x-axis",
-                y="y-axis",
-                size="Annual Payment",
-                color='title',
-                log_x=True,
-                size_max=200,
-            )
-        st.plotly_chart(fig, theme="streamlit", use_container_width=True)
-
-
     with col2:
         prem_D_salary = final_premium/annual_salary
         prem_D_salary_plt = int(prem_D_salary*1000)/10
         st.subheader(f"{prem_D_salary_plt}% of Annual Salary")
     
-    Total_prem = payment_opt*final_premium
-    Total_prem_c = add_commas(Total_prem)
-    st.subheader(f"Total Premium: $ {Total_prem_c}")
+    
+        # # Sample data for the pie chart
+        # labels = ['Annual Salary', 'Annual Premium']
+        # values = [(annual_salary-final_premium),final_premium]  # Sample values for the categories
 
-    RoP_Plus_investwell_bonus = int(ROP['Expected Future Value High-Alpha'].sum()+(risk_prem*payment_opt*RoPfactor))
-    RoP_Plus_investwell_bonus_c = add_commas(RoP_Plus_investwell_bonus)
-    st.subheader(f"RoP Plus investwell bonus : $ {RoP_Plus_investwell_bonus_c}")
-                                                         
-    After_Eatwell_Health_Factor = int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term))
-    After_Eatwell_Health_Factor_c = add_commas(After_Eatwell_Health_Factor)
-    st.subheader(f"After Eatwell Health Factor : $ {After_Eatwell_Health_Factor_c}")
+        # # Create a pie chart using Plotly with custom size
+        # fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.4)])
+        # fig.update_layout(height=500, width=500)  # Set custom height and width
 
+        # # Display the pie chart using Streamlit
+        # st.plotly_chart(fig)
+    
+    
+    st.header(" ")
+    st.header(" ")
+    col1, col2= st.columns([5,5])
+    with col1:
+        Total_prem = int(risk_prem*RoPfactor*payment_opt)
+        Total_prem_c = add_commas(Total_prem)
+        st.subheader(f"Total Premium: $ {Total_prem_c}")
 
-    # Bar chart plot
-    bar_chart_data = {
-        ' ': ['Total Premium', 'RoP Plus investwell bonus', 'After Eatwell Health Factor'],
-        'Values': [Total_prem, RoP_Plus_investwell_bonus, After_Eatwell_Health_Factor]
-    }
+        RoP_Plus_investwell_bonus = int(ROP['Expected Future Value High-Alpha'].sum()+(risk_prem*payment_opt*RoPfactor))
+        RoP_Plus_investwell_bonus_c = add_commas(RoP_Plus_investwell_bonus)
+        st.subheader(f"RoP Plus investwell bonus : $ {RoP_Plus_investwell_bonus_c}")
+                                                            
+        After_Eatwell_Health_Factor = int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term))
+        After_Eatwell_Health_Factor_c = add_commas(After_Eatwell_Health_Factor)
+        st.subheader(f"After Eatwell Health Factor : $ {After_Eatwell_Health_Factor_c}")
 
-    # Create a DataFrame from the data
-    df = pd.DataFrame(bar_chart_data)
+    with col2:
+        # # Bar chart plot
+        categories = ['Total Premium', 'RoP Plus investwell bonus', 'After Eatwell Health Factor']
+        values = [Total_prem, RoP_Plus_investwell_bonus, After_Eatwell_Health_Factor]
 
-    # Create a bar chart using Plotly Express
-    fig = px.bar(df, x=' ', y='Values', title='Maturity Value')
+        # Create a bar chart using Plotly
+        fig = go.Figure(data=[go.Bar(x=categories, y=values)])
 
-    # Display the chart in Streamlit app
-    st.plotly_chart(fig)
+        # Control the size of the chart
+        fig.update_layout(
+            width=500,  # Set the width of the chart
+            height=500,  # Set the height of the chart
+            title="Maturity Value"
+        )
 
+        # Display the bar chart using Streamlit
+        st.plotly_chart(fig)
 
 
 with tab_concept:
@@ -325,17 +316,17 @@ with tab_concept:
     st.markdown("**2. use the fixed income assumption to determine the amount needed for the RoP**")
     point_2 = '''
     - given the fixed income investment income interest rate e.g. the infrastructure projects
-     > coupon : 5%
+    > coupon : 5%
     '''
     st.markdown(point_2)
 
     point_3 = '''
     - given also the anticipated expected return and variance of the high performance asset
-     > mean 12%
+    > mean 12%
 
-     > variance: 18% - variance is highly correlated to potential draw-down / failure
+    > variance: 18% - variance is highly correlated to potential draw-down / failure
 
-     > max DD: 30% - maximum draw-down puts a margin for failure of the strategy
+    > max DD: 30% - maximum draw-down puts a margin for failure of the strategy
     '''
     st.markdown(point_3)
     
@@ -366,19 +357,24 @@ with RoP_Table:
 
 with other_metric:
     st.subheader("all metric in ROP worksheet")
-    st.write(f"RoP factor: {RoPfactor}")
-    st.write(f"RoP factor goal seek: {goal_seek}")
-    st.write(f"Risk Premium: {risk_prem}")
-    st.write(f'Fixed Income Asset: {risk_prem*(goal_seek-1)}')
-    st.write(f"Final goal seek premium: {final_premium}")
+    st.write(f"RoP factor: {RoPfactor*100}%")
+    # st.write(f"RoP factor goal seek: {goal_seek*100}%")
+    st.write(f"Risk Premium: {add_commas(int(risk_prem))}")
+    st.write(f'Fixed Income Asset: {add_commas(int(risk_prem*(goal_seek-1)))}')
+    st.write(f"Final goal seek premium: {add_commas(final_premium)}")
 
     st.subheader(" ")
     st.subheader('All metric in the blue cell of Product setup')
-    st.write(f"Premium: {final_premium}")
+    st.write(f"Premium: {add_commas(final_premium)}")
     high_alpha_FV = ROP['Expected Future Value High-Alpha'].sum()
-    st.write(f'calculated bonus: {high_alpha_FV}')
-    st.write(f'as percent of RoP: {high_alpha_FV/(risk_prem*RoPfactor*payment_opt)}')
-    st.write(f"total maturity value: {high_alpha_FV+(risk_prem*RoPfactor*payment_opt)}")
-    st.write(f"calculated premium: {risk_prem*RoPfactor}")
-    st.write(f"a health factor bonus: {profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term)}")
-    st.write(f"likely maturity value: {RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term)}")
+    st.write(f'calculated bonus: {add_commas(int(high_alpha_FV))}')
+    st.write(f'as percent of RoP: {int(high_alpha_FV/(risk_prem*RoPfactor*payment_opt)*100)}%')
+    st.write(f"total maturity value: {add_commas(int(high_alpha_FV+(risk_prem*RoPfactor*payment_opt)))}")
+    st.write(f"calculated premium: {add_commas(int(risk_prem*RoPfactor))}")
+    st.write(f"a health factor bonus: {add_commas(int(profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term)))}")
+    st.write(f"likely maturity value: {add_commas(int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term)))}")
+
+
+
+
+ 
