@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from scipy.optimize import fsolve
 
@@ -239,11 +238,12 @@ final_premium = int(risk_prem*RoPfactor*100)/100
 main_display, tab_concept, RoP_Table, other_metric= st.tabs(["Main Display", "Concept", 'RoP Table', 'Others'])
 
 with main_display:
-    col1, col2= st.columns([5,5])
+    col1, col2= st.columns([4,6])
+    font_size = 26
     with col1:
-        st.subheader("Calculated Annual Premium")
-        st.subheader(f"Annual Premium ${add_commas(final_premium)}")
-
+        st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>Calculated Annual Premium.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>Annual Premium ${add_commas(final_premium)}</p>", unsafe_allow_html=True)
+        
         # if annual_salary == None:
         #     number_str = str(final_premium)
         #     decimal_index = number_str.index('.')
@@ -275,23 +275,23 @@ with main_display:
     
     st.header(" ")
     st.header(" ")
-    col1, col2= st.columns([5,5])
+    col1, col2= st.columns([4,6])
     with col1:
         Total_prem = int(risk_prem*RoPfactor*payment_opt)
         Total_prem_c = add_commas(Total_prem)
-        st.subheader(f"Total Premium: $ {Total_prem_c}")
+        st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>Total Premium: $ {Total_prem_c}</p>", unsafe_allow_html=True)
 
         RoP_Plus_investwell_bonus = int(ROP['Expected Future Value High-Alpha'].sum()+(risk_prem*payment_opt*RoPfactor))
         RoP_Plus_investwell_bonus_c = add_commas(RoP_Plus_investwell_bonus)
-        st.subheader(f"RoP Plus investwell bonus : $ {RoP_Plus_investwell_bonus_c}")
+        st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>RoP Plus investwell bonus : $ {RoP_Plus_investwell_bonus_c}</p>", unsafe_allow_html=True)
                                                             
         After_Eatwell_Health_Factor = int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term))
         After_Eatwell_Health_Factor_c = add_commas(After_Eatwell_Health_Factor)
-        st.subheader(f"After Eatwell Health Factor : $ {After_Eatwell_Health_Factor_c}")
+        st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>After Eatwell Health Factor : $ {After_Eatwell_Health_Factor_c}</p>", unsafe_allow_html=True)
 
     with col2:
         # # Bar chart plot
-        categories = ['Total Premium', 'RoP Plus investwell bonus', 'After Eatwell Health Factor']
+        categories = ['Return of Premium', 'RoP Plus investwell', 'After Eatwell']
         values = [Total_prem, RoP_Plus_investwell_bonus, After_Eatwell_Health_Factor]
 
         # Create a bar chart using Plotly
@@ -299,13 +299,14 @@ with main_display:
 
         # Control the size of the chart
         fig.update_layout(
-            width=500,  # Set the width of the chart
-            height=500,  # Set the height of the chart
-            title="Maturity Value"
+            height=800,  # Set the height of the chart
+            title="Maturity Value",
+            title_font=dict(size=28)
         )
-
+        fig.update_xaxes(tickfont=dict(size=20))
         # Display the bar chart using Streamlit
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, use_container_width=True, config={'responsive': True})
+
 
 
 with tab_concept:
