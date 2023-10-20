@@ -54,15 +54,15 @@ st.button("Click me")
 
 
 
-def page_config():
-    img = 'https://reimage.cfo-ai.com/assets/images/icon/powered_logo.svg'
-    st.set_page_config(
-        "INSURANCE x EATWELL",
-        # img,
-        initial_sidebar_state="expanded",
-        layout="wide",
-    )
-page_config()
+# def page_config():
+#     img = 'https://reimage.cfo-ai.com/assets/images/icon/powered_logo.svg'
+#     st.set_page_config(
+#         "INSURANCE x EATWELL",
+#         # img,
+#         initial_sidebar_state="expanded",
+#         layout="wide",
+#     )
+# page_config()
 
 
 def add_commas(number):
