@@ -6,6 +6,16 @@ from scipy.optimize import fsolve
 import hmac
 
 
+def page_config():
+    img = 'https://reimage.cfo-ai.com/assets/images/icon/powered_logo.svg'
+    st.set_page_config(
+        "INSURANCE x EATWELL",
+        # img,
+        initial_sidebar_state="expanded",
+        layout="wide",
+    )
+page_config()
+
 
 
 def check_password():
@@ -47,24 +57,6 @@ if not check_password():
     st.stop()
 
 # Main Streamlit app starts here
-st.write("Here goes your normal Streamlit app...2")
-st.button("Click me")
-
-
-
-
-
-# def page_config():
-#     img = 'https://reimage.cfo-ai.com/assets/images/icon/powered_logo.svg'
-#     st.set_page_config(
-#         "INSURANCE x EATWELL",
-#         # img,
-#         initial_sidebar_state="expanded",
-#         layout="wide",
-#     )
-# page_config()
-
-
 def add_commas(number):
     # Convert the number to a string
     num_str = str(number)
