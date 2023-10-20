@@ -1,9 +1,44 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from scipy.optimize import fsolve
+import hmac
+
+
+
+
+def check_password():
+    """Returns `True` if the user had the correct password."""
+
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store the password.
+        else:
+            st.session_state["password_correct"] = False
+
+    # Return True if the passward is validated.
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # Show input for password.
+    st.text_input(
+        "Password", type="password", on_change=password_entered, key="password"
+    )
+    if "password_correct" in st.session_state:
+        st.error("😕 Password incorrect")
+    return False
+
+
+if not check_password():
+    st.stop()  # Do not continue if check_password is not True.
+
+# Main Streamlit app starts here
+st.write("Here goes your normal Streamlit app...")
+st.button("Click me")
+
 
 def page_config():
     img = 'https://reimage.cfo-ai.com/assets/images/icon/powered_logo.svg'
@@ -94,23 +129,34 @@ with st.sidebar:
     st.title(" ")
 
     # Maturity Term
-    min_value = max(10, payment_opt)
+    min_value = max(11, payment_opt)
     maturity_term = st.select_slider(
         "Maturity Term (year)",
         options = np.arange(min_value, 51),
+        value = 20
     )
     # st.write('The current number is ', maturity_term)
     st.title(" ")
 
+    # health improvement
+    health_improvement = st.select_slider(
+        "Health Improvement (0%, 100%])",
+        options = np.arange(0, 101, 5),
+        value = 30
+    )
+    # st.write('The current number is ', health_improvement)
+    health_improvement = health_improvement/100
+    st.title(" ")
+
+
     st.title("Personal info")
     annual_salary = st.number_input(
-        "Your Annual Salary", 
-        min_value = 0,
-        value = None, 
-        step = 1000,
-        placeholder = "Type a number..."
+        "Your Annual Salary    (step: 1000)", 
+        min_value = 100000,
+        value = 179900, 
+        step = 1000
         )
-    st.write('The current number is ', annual_salary)
+    st.write('The current number is  $', add_commas(annual_salary))
 
 
 
@@ -127,7 +173,7 @@ RoPfactor = 4
 fixed_income_portion = 0.75
 high_alpha_portion = 0.25
 profit_share = 0.5
-decrement_reduction = 0.6
+
 
 
 # Create the first column from 1 to 20
@@ -239,22 +285,27 @@ final_premium = int(risk_prem*RoPfactor*100)/100
 main_display, tab_concept, RoP_Table, other_metric= st.tabs(["Main Display", "Concept", 'RoP Table', 'Others'])
 
 with main_display:
-    col1, col2= st.columns([5,5])
+    col1, col2= st.columns([4,6])
+    font_size = 26
     with col1:
-        st.subheader("Calculated Annual Premium")
-        st.subheader(f"Annual Premium ${add_commas(final_premium)}")
+        st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>Calculated Annual Premium.</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>Annual Premium ${add_commas(final_premium)}</p>", unsafe_allow_html=True)
+        
+        # if annual_salary == None:
+        #     number_str = str(final_premium)
+        #     decimal_index = number_str.index('.')
+        #     digits_before_decimal = number_str[:decimal_index]
+        #     num_digits_before_decimal = len(digits_before_decimal)
+        #     annual_salary = int(final_premium/0.1 / 10**(num_digits_before_decimal-1)) * 10**(num_digits_before_decimal-1)
 
-        if annual_salary == None:
-            number_str = str(final_premium)
-            decimal_index = number_str.index('.')
-            digits_before_decimal = number_str[:decimal_index]
-            num_digits_before_decimal = len(digits_before_decimal)
-            annual_salary = int(final_premium/0.1 / 10**(num_digits_before_decimal-1)) * 10**(num_digits_before_decimal-1)
 
     with col2:
         prem_D_salary = final_premium/annual_salary
         prem_D_salary_plt = int(prem_D_salary*1000)/10
-        st.subheader(f"{prem_D_salary_plt}% of Annual Salary")
+        if prem_D_salary >= 1:
+            st.error(f"{prem_D_salary_plt}% of Annual Salary")
+        else:
+            st.subheader(f"{prem_D_salary_plt}% of Annual Salary")
     
     
         # # Sample data for the pie chart
@@ -271,23 +322,23 @@ with main_display:
     
     st.header(" ")
     st.header(" ")
-    col1, col2= st.columns([5,5])
+    col1, col2= st.columns([4,6])
     with col1:
         Total_prem = int(risk_prem*RoPfactor*payment_opt)
         Total_prem_c = add_commas(Total_prem)
-        st.subheader(f"Total Premium: $ {Total_prem_c}")
+        st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>Total Premium: $ {Total_prem_c}</p>", unsafe_allow_html=True)
 
         RoP_Plus_investwell_bonus = int(ROP['Expected Future Value High-Alpha'].sum()+(risk_prem*payment_opt*RoPfactor))
         RoP_Plus_investwell_bonus_c = add_commas(RoP_Plus_investwell_bonus)
-        st.subheader(f"RoP Plus investwell bonus : $ {RoP_Plus_investwell_bonus_c}")
+        st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>RoP Plus investwell bonus : $ {RoP_Plus_investwell_bonus_c}</p>", unsafe_allow_html=True)
                                                             
-        After_Eatwell_Health_Factor = int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term))
+        After_Eatwell_Health_Factor = int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*health_improvement*((1+fixed_income_asset_coupon)**maturity_term))
         After_Eatwell_Health_Factor_c = add_commas(After_Eatwell_Health_Factor)
-        st.subheader(f"After Eatwell Health Factor : $ {After_Eatwell_Health_Factor_c}")
+        st.markdown(f"<p style='font-size: {font_size}px; text-align: left;'>After Eatwell Health Factor : $ {After_Eatwell_Health_Factor_c}</p>", unsafe_allow_html=True)
 
     with col2:
         # # Bar chart plot
-        categories = ['Total Premium', 'RoP Plus investwell bonus', 'After Eatwell Health Factor']
+        categories = ['Return of Premium', 'RoP Plus investwell', 'After Eatwell']
         values = [Total_prem, RoP_Plus_investwell_bonus, After_Eatwell_Health_Factor]
 
         # Create a bar chart using Plotly
@@ -295,13 +346,14 @@ with main_display:
 
         # Control the size of the chart
         fig.update_layout(
-            width=500,  # Set the width of the chart
-            height=500,  # Set the height of the chart
-            title="Maturity Value"
+            height=800,  # Set the height of the chart
+            title="Maturity Value",
+            title_font=dict(size=28)
         )
-
+        fig.update_xaxes(tickfont=dict(size=20))
         # Display the bar chart using Streamlit
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, use_container_width=True, config={'responsive': True})
+
 
 
 with tab_concept:
@@ -371,8 +423,8 @@ with other_metric:
     st.write(f'as percent of RoP: {int(high_alpha_FV/(risk_prem*RoPfactor*payment_opt)*100)}%')
     st.write(f"total maturity value: {add_commas(int(high_alpha_FV+(risk_prem*RoPfactor*payment_opt)))}")
     st.write(f"calculated premium: {add_commas(int(risk_prem*RoPfactor))}")
-    st.write(f"a health factor bonus: {add_commas(int(profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term)))}")
-    st.write(f"likely maturity value: {add_commas(int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*(1-decrement_reduction)*((1+fixed_income_asset_coupon)**maturity_term)))}")
+    st.write(f"a health factor bonus: {add_commas(int(profit_share*insurance_risk*health_improvement*((1+fixed_income_asset_coupon)**maturity_term)))}")
+    st.write(f"likely maturity value: {add_commas(int(RoP_Plus_investwell_bonus + profit_share*insurance_risk*health_improvement*((1+fixed_income_asset_coupon)**maturity_term)))}")
 
 
 
